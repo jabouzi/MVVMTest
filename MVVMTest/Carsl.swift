@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CarModel {
+class Cars {
     var cars = [CarViewModel]()
     
     init() {

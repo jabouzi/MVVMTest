@@ -10,11 +10,11 @@ import UIKit
 
 class TableViewController: UITableViewController {
     
-    var carModel: CarModel?
+    var cars: Cars?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        carModel = CarModel();
+        cars = Cars();
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "tableCell")
         self.navigationItem.title = "Main"
     }
@@ -33,13 +33,16 @@ class TableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return (carModel?.cars.count)!
+        return (cars?.cars.count)!
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath)
-        cell.textLabel?.text = carModel?.cars[indexPath.row].titleText
+        var cell = UITableViewCell(style: .value1, reuseIdentifier: "tableCell")
+        let carViewModel = cars?.cars[indexPath.row]
+        cell.textLabel?.text = carViewModel?.titleText
+        cell.detailTextLabel?.text = carViewModel?.horsepowerText
+        loadImage(cell: cell, photoURL: carViewModel?.photoURL)
         return cell
     }
     
@@ -47,7 +50,19 @@ class TableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         print("Num: \(indexPath.row)")
-        print("Value: \(carModel?.cars[indexPath.row].titleText)")
+        print("Value: \(cars?.cars[indexPath.row].horsepowerText)")
+    }
+    
+    func loadImage(cell: UITableViewCell, photoURL: NSURL?) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            guard let imageURL = photoURL, let imageData = NSData(contentsOf: imageURL as URL) else {
+                return
+            }
+            DispatchQueue.main.async {
+                cell.imageView?.image = UIImage(data: imageData as Data)
+                cell.setNeedsLayout()
+            }
+        }
     }
 
     /*
